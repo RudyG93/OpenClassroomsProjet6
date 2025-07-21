@@ -95,7 +95,6 @@ exports.modifyBook = (req, res, next) => {
         });
 };
 
-// Returns the top 3 books sorted by average rating in descending order
 exports.getBestRatedBooks = (req, res, next) => {
     Book.find().sort({ averageRating: -1 }).limit(3).then(
         (books) => {
@@ -111,7 +110,7 @@ exports.getBestRatedBooks = (req, res, next) => {
 };
 
 exports.rateBook = (req, res, next) => {
-    const userId = req.auth.userId; // récupéré depuis le token
+    const userId = req.auth.userId;
     const { rating } = req.body;
 
     if (typeof rating !== 'number' || rating < 0 || rating > 5) {
@@ -132,10 +131,8 @@ exports.rateBook = (req, res, next) => {
             return res.status(403).json({ message: 'You have already rated this book' });
         }
 
-        // Ajout de la note
         book.ratings.push({ userId, grade: rating });
 
-        // Recalcul de la moyenne
         const total = book.ratings.reduce((sum, r) => sum + r.grade, 0);
         book.averageRating = Math.round((total / book.ratings.length) * 10) / 10;
 
